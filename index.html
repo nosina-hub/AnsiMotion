@@ -3,20 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>vid2ascii ✨</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>AnsiMotion ✨</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
+    --bg:       #080808;
+    --bg2:      #111111;
+    --bg3:      #181818;
+    --bg4:      #202020;
     --pink:     #f4a7c3;
     --pink2:    #e879a0;
-    --blue:     #7eb8f7;
-    --blue2:    #3d8ef0;
     --lavender: #c9b6e4;
-    --bg:       #0d0d18;
-    --bg2:      #13132a;
-    --bg3:      #1a1a35;
+    --blue:     #7eb8f7;
+    --green:    #28c840;
+    --yellow:   #febc2e;
+    --red:      #ff5f57;
     --text:     #f0eafa;
-    --muted:    #8888aa;
+    --muted:    #666680;
+    --border:   rgba(255,255,255,.07);
     --mono:     'Space Mono', monospace;
     --sans:     'DM Sans', sans-serif;
   }
@@ -30,251 +34,512 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 0 0 40px;
   }
 
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 60% 40% at 15% 15%, rgba(244,167,195,.08) 0%, transparent 70%),
-      radial-gradient(ellipse 50% 50% at 85% 85%, rgba(126,184,247,.08) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .wrap {
-    position: relative;
-    z-index: 1;
+  /* ── top header bar ── */
+  .topbar {
     width: 100%;
-    max-width: 900px;
-    padding: 40px 20px 60px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .topbar-left {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 32px;
+    gap: 2px;
   }
 
-  /* header */
-  header { text-align: center; }
-  .sparkle { font-family: var(--mono); font-size: 12px; color: var(--lavender); letter-spacing: .15em; margin-bottom: 10px; }
-  h1 {
+  .sparkle {
     font-family: var(--mono);
-    font-size: clamp(22px, 5vw, 36px);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: .12em;
+  }
+
+  .brand {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .brand h1 {
+    font-family: var(--mono);
+    font-size: 22px;
     font-weight: 700;
     background: linear-gradient(135deg, var(--pink), var(--lavender), var(--blue));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    margin-bottom: 8px;
-  }
-  .sub { color: var(--muted); font-size: 14px; }
-
-  /* drop zone */
-  .drop-zone {
-    width: 100%;
-    border: 2px dashed rgba(244,167,195,.3);
-    border-radius: 16px;
-    background: var(--bg2);
-    padding: 40px 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: border-color .2s, background .2s;
-    position: relative;
-  }
-  .drop-zone:hover, .drop-zone.drag-over {
-    border-color: var(--pink);
-    background: rgba(244,167,195,.05);
-  }
-  .drop-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-  .drop-icon { font-size: 36px; margin-bottom: 10px; }
-  .drop-title { font-family: var(--mono); font-size: 14px; color: var(--pink); margin-bottom: 6px; }
-  .drop-sub { font-size: 13px; color: var(--muted); }
-
-  /* controls */
-  .controls {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
-  .ctrl-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--bg2);
-    border: 1px solid rgba(255,255,255,.07);
-    border-radius: 10px;
-    padding: 8px 14px;
-  }
-  .ctrl-group label { font-family: var(--mono); font-size: 11px; color: var(--muted); }
-  .ctrl-group input[type=range] {
-    width: 90px;
-    accent-color: var(--pink);
-  }
-  .ctrl-group span { font-family: var(--mono); font-size: 12px; color: var(--pink); min-width: 28px; }
-  .ctrl-group select {
+  .version-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
     background: var(--bg3);
-    border: 1px solid rgba(255,255,255,.1);
-    border-radius: 6px;
-    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 6px;
+  }
+
+  .sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .topbar-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .upload-btn {
     font-family: var(--mono);
     font-size: 11px;
-    padding: 4px 8px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(244,167,195,.4);
+    background: rgba(244,167,195,.08);
+    color: var(--pink);
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+  .upload-btn input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .upload-btn:hover {
+    background: rgba(244,167,195,.15);
+    border-color: var(--pink);
+  }
+
+  .file-info {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    display: none;
+    align-items: center;
+    gap: 6px;
+  }
+  .file-info.visible { display: flex; }
+  .file-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+
+  /* ── main content ── */
+  .main {
+    width: 100%;
+    max-width: 980px;
+    padding: 24px 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* ── terminal window ── */
+  .terminal {
+    width: 100%;
+    background: #050505;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .term-bar {
+    background: var(--bg3);
+    padding: 9px 14px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .dot-r { background: var(--red); }
+  .dot-y { background: var(--yellow); }
+  .dot-g { background: var(--green); }
+
+  .term-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-left: 6px;
+  }
+
+  .term-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .term-fps {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--lavender);
+  }
+
+  .ansi-badge {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--muted);
+    background: var(--bg4);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 6px;
+    letter-spacing: .08em;
+  }
+
+  #ascii-out {
+    font-family: var(--mono);
+    font-size: clamp(5px, 1vw, 8px);
+    line-height: 1.15;
+    white-space: pre;
+    display: block;
+    padding: 8px 6px;
+    overflow: hidden;
+    min-height: 340px;
+  }
+
+  .term-footer {
+    background: var(--bg3);
+    border-top: 1px solid var(--border);
+    padding: 6px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .live-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  .live-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  /* ── progress scrubber ── */
+  .scrubber-wrap {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .time-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    min-width: 44px;
+  }
+
+  .scrubber {
+    flex: 1;
+    height: 3px;
+    background: var(--bg3);
+    border-radius: 99px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+  }
+
+  #progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--pink2), var(--blue));
+    border-radius: 99px;
+    transition: width .1s linear;
+  }
+
+  .file-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    flex: 1;
+    text-align: center;
+  }
+
+  /* ── bottom control bar ── */
+  .controls-bar {
+    width: 100%;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .controls-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
   }
 
   .btn {
     font-family: var(--mono);
-    font-size: 12px;
-    padding: 10px 22px;
-    border-radius: 10px;
+    font-size: 11px;
+    padding: 8px 18px;
+    border-radius: 7px;
     border: none;
     cursor: pointer;
     transition: opacity .15s, transform .1s;
-  }
-  .btn:active { transform: scale(.97); }
-  .btn-pink { background: linear-gradient(135deg, var(--pink2), var(--lavender)); color: #fff; }
-  .btn-blue { background: linear-gradient(135deg, var(--blue2), var(--lavender)); color: #fff; }
-  .btn:disabled { opacity: .4; cursor: not-allowed; }
-
-  /* terminal screen */
-  .terminal {
-    width: 100%;
-    background: #050510;
-    border-radius: 14px;
-    border: 1px solid rgba(255,255,255,.07);
-    overflow: hidden;
-    display: none;
-  }
-  .terminal.visible { display: block; }
-
-  .term-bar {
-    background: var(--bg3);
-    padding: 10px 16px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    border-bottom: 1px solid rgba(255,255,255,.05);
+    gap: 6px;
   }
-  .dot { width: 10px; height: 10px; border-radius: 50%; }
-  .dot-r { background: #ff5f57; }
-  .dot-y { background: #febc2e; }
-  .dot-g { background: #28c840; }
-  .term-title { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-left: 8px; }
-  .term-fps   { font-family: var(--mono); font-size: 11px; color: var(--lavender); margin-left: auto; }
+  .btn:active { transform: scale(.97); }
+  .btn:disabled { opacity: .35; cursor: not-allowed; }
 
-  #ascii-out {
-    font-family: var(--mono);
-    font-size: clamp(5px, 1.1vw, 9px);
-    line-height: 1.18;
-    white-space: pre;
-    display: block;
-    padding: 6px 4px;
-    overflow: hidden;
-    min-height: 200px;
+  .btn-play  { background: linear-gradient(135deg, var(--pink2), var(--lavender)); color: #fff; }
+  .btn-stop  { background: var(--bg4); border: 1px solid var(--border); color: var(--text); }
+  .btn-ghost {
+    background: var(--bg4);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 10px;
+    padding: 7px 13px;
   }
+  .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,.15); }
 
-  /* progress */
-  .progress-wrap {
-    width: 100%;
-    background: var(--bg2);
-    border-radius: 99px;
-    height: 4px;
-    overflow: hidden;
-    display: none;
+  .btn-export {
+    background: rgba(126,184,247,.1);
+    border: 1px solid rgba(126,184,247,.3);
+    color: var(--blue);
+    font-size: 10px;
+    padding: 7px 13px;
   }
-  .progress-wrap.visible { display: block; }
-  #progress-bar {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, var(--pink), var(--blue));
-    border-radius: 99px;
-    transition: width .1s;
+  .btn-export:hover { background: rgba(126,184,247,.18); }
+
+  .btn-spacer { margin-left: auto; display: flex; gap: 8px; }
+
+  /* sliders row */
+  .controls-sliders {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
   }
 
-  /* playback buttons */
-  .playback {
-    display: none;
-    gap: 10px;
+  .ctrl-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .ctrl-label-row {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
   }
-  .playback.visible { display: flex; }
 
-  .time-display {
+  .ctrl-label {
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: lowercase;
+  }
+
+  .ctrl-val {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--pink);
+  }
+
+  input[type=range] {
+    width: 100%;
+    accent-color: var(--pink);
+    height: 3px;
+  }
+
+  select {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 5px 8px;
+    width: 100%;
+  }
+
+  /* drop overlay */
+  .drop-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(8,8,8,.85);
+    z-index: 99;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+    border: 3px dashed var(--pink);
+  }
+  .drop-overlay.visible { display: flex; }
+  .drop-overlay p { font-family: var(--mono); color: var(--pink); font-size: 18px; }
+
+  /* empty state */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 340px;
+    gap: 10px;
     color: var(--muted);
   }
+  .empty-state .icon { font-size: 32px; opacity: .5; }
+  .empty-state p { font-family: var(--mono); font-size: 12px; }
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <header>
-    <p class="sparkle">ੈ✩‧₊˚ terminal art in your browser ˚₊‧✩ੈ</p>
-    <h1>vid2ascii</h1>
-    <p class="sub">upload a video and watch it play as colored ascii art 🩷</p>
-  </header>
+<!-- drag overlay -->
+<div class="drop-overlay" id="drop-overlay">
+  <div style="font-size:40px">🎞️</div>
+  <p>drop video to load</p>
+</div>
 
-  <!-- drop zone -->
-  <div class="drop-zone" id="drop-zone">
-    <input type="file" id="file-input" accept="video/*">
-    <div class="drop-icon">🎞️</div>
-    <p class="drop-title">drop a video here</p>
-    <p class="drop-sub">or click to browse — mp4, webm, mov, avi</p>
-  </div>
-
-  <!-- controls -->
-  <div class="controls" id="controls" style="display:none">
-    <div class="ctrl-group">
-      <label>cols</label>
-      <input type="range" id="cols-slider" min="40" max="180" value="100">
-      <span id="cols-val">100</span>
+<!-- top header -->
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="sparkle">✦ terminal art in your browser ✦</span>
+    <div class="brand">
+      <h1>AnsiMotion</h1>
+      <span class="version-badge">v2.4-ansi</span>
     </div>
-    <div class="ctrl-group">
-      <label>ramp</label>
-      <select id="ramp-select">
-        <option value="short">simple</option>
-        <option value="long">detailed</option>
-        <option value="blocks">blocks</option>
-        <option value="dots">dots</option>
-      </select>
-    </div>
-    <div class="ctrl-group">
-      <label>fps cap</label>
-      <input type="range" id="fps-slider" min="5" max="60" value="30">
-      <span id="fps-val">30</span>
-    </div>
-    <div class="ctrl-group">
-      <label>vol</label>
-      <input type="range" id="vol-slider" min="0" max="1" step="0.05" value="1">
-      <span id="vol-val">100%</span>
-    </div>
-    <button class="btn btn-pink" id="play-btn">▶ play</button>
-    <button class="btn btn-blue" id="stop-btn" disabled>■ stop</button>
+    <p class="sub">Upload any video file to render smooth ANSI terminal art in real-time</p>
   </div>
-
-  <!-- playback info -->
-  <div class="playback" id="playback-row">
-    <span class="time-display" id="time-display">0:00 / 0:00</span>
+  <div class="topbar-right">
+    <label class="upload-btn">
+      <input type="file" id="file-input" accept="video/*">
+      📄 Upload Video File
+    </label>
+    <div class="file-info" id="file-info">
+      <div class="file-dot"></div>
+      <span id="file-info-text">—</span>
+    </div>
   </div>
+</div>
 
-  <!-- progress bar -->
-  <div class="progress-wrap" id="progress-wrap">
-    <div id="progress-bar"></div>
-  </div>
+<!-- main -->
+<div class="main">
 
-  <!-- terminal screen -->
-  <div class="terminal" id="terminal">
+  <!-- terminal window -->
+  <div class="terminal">
     <div class="term-bar">
       <div class="dot dot-r"></div>
       <div class="dot dot-y"></div>
       <div class="dot dot-g"></div>
-      <span class="term-title">vid2ascii.py</span>
-      <span class="term-fps" id="fps-display">0 fps</span>
+      <span class="term-title" id="term-title">tty1: ansimotion.py — 100 cols — 0 fps</span>
+      <div class="term-right">
+        <span class="ansi-badge">ANSI 24-BIT</span>
+      </div>
     </div>
-    <div id="ascii-out"></div>
+
+    <div id="ascii-out">
+      <div class="empty-state">
+        <div class="icon">🎞️</div>
+        <p>upload a video to begin</p>
+      </div>
+    </div>
+
+    <div class="term-footer">
+      <div class="live-indicator" id="live-indicator" style="display:none">
+        <div class="live-dot"></div>
+        <span>LIVE RENDER</span>
+      </div>
+      <span id="footer-time" style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:auto">—</span>
+    </div>
+  </div>
+
+  <!-- scrubber -->
+  <div class="scrubber-wrap">
+    <span class="time-label" id="time-current">0:00</span>
+    <div class="scrubber">
+      <div id="progress-bar"></div>
+    </div>
+    <span class="file-label" id="file-label">—</span>
+    <span class="time-label" style="text-align:right" id="time-total">0:00</span>
+  </div>
+
+  <!-- control bar -->
+  <div class="controls-bar">
+    <div class="controls-top">
+      <button class="btn btn-play" id="play-btn">▶ play</button>
+      <button class="btn btn-stop" id="stop-btn" disabled>■ stop</button>
+      <div class="btn-spacer">
+        <button class="btn btn-ghost" id="copy-btn">📋 copy buf</button>
+        <button class="btn btn-export" id="export-btn">↓ Export ANSI</button>
+      </div>
+    </div>
+
+    <div class="controls-sliders">
+      <div class="ctrl-group">
+        <div class="ctrl-label-row">
+          <span class="ctrl-label">cols</span>
+          <span class="ctrl-val" id="cols-val">100</span>
+        </div>
+        <input type="range" id="cols-slider" min="40" max="180" value="100">
+      </div>
+
+      <div class="ctrl-group">
+        <div class="ctrl-label-row">
+          <span class="ctrl-label">ramp type</span>
+        </div>
+        <select id="ramp-select">
+          <option value="short">simple (@%#+=-.)</option>
+          <option value="long">detailed (@%#*+=-.:` )</option>
+          <option value="blocks">blocks (█▓▒░ )</option>
+          <option value="dots">dots (●•· )</option>
+        </select>
+      </div>
+
+      <div class="ctrl-group">
+        <div class="ctrl-label-row">
+          <span class="ctrl-label">fps cap</span>
+          <span class="ctrl-val" id="fps-val">30</span>
+        </div>
+        <input type="range" id="fps-slider" min="5" max="60" value="30">
+      </div>
+
+      <div class="ctrl-group">
+        <div class="ctrl-label-row">
+          <span class="ctrl-label">vol</span>
+          <span class="ctrl-val" id="vol-val">100%</span>
+        </div>
+        <input type="range" id="vol-slider" min="0" max="1" step="0.05" value="1">
+      </div>
+    </div>
   </div>
 
 </div>
@@ -287,57 +552,63 @@ const RAMPS = {
   dots:   ' ·•●',
 };
 
-const COLOR_SHIFT = 3; // 5-bit quantise
+const COLOR_SHIFT = 3;
 
 let videoEl    = null;
 let rafId      = null;
 let running    = false;
 let lastFrameT = 0;
-let fpsSmooth  = 0;
 let frameCount = 0;
 let lastFpsT   = 0;
+let lastAscii  = '';
 
-const dropZone   = document.getElementById('drop-zone');
-const fileInput  = document.getElementById('file-input');
-const controls   = document.getElementById('controls');
-const terminal   = document.getElementById('terminal');
-const asciiOut   = document.getElementById('ascii-out');
-const playBtn    = document.getElementById('play-btn');
-const stopBtn    = document.getElementById('stop-btn');
-const colsSlider = document.getElementById('cols-slider');
-const colsVal    = document.getElementById('cols-val');
-const fpsSlider  = document.getElementById('fps-slider');
-const fpsVal     = document.getElementById('fps-val');
-const rampSel    = document.getElementById('ramp-select');
-const fpsDisplay = document.getElementById('fps-display');
-const volSlider  = document.getElementById('vol-slider');
-const volVal     = document.getElementById('vol-val');
-const progressWrap = document.getElementById('progress-wrap');
-const progressBar  = document.getElementById('progress-bar');
-const playbackRow  = document.getElementById('playback-row');
-const timeDisplay  = document.getElementById('time-display');
+const fileInput   = document.getElementById('file-input');
+const asciiOut    = document.getElementById('ascii-out');
+const playBtn     = document.getElementById('play-btn');
+const stopBtn     = document.getElementById('stop-btn');
+const copyBtn     = document.getElementById('copy-btn');
+const exportBtn   = document.getElementById('export-btn');
+const colsSlider  = document.getElementById('cols-slider');
+const colsVal     = document.getElementById('cols-val');
+const fpsSlider   = document.getElementById('fps-slider');
+const fpsVal      = document.getElementById('fps-val');
+const rampSel     = document.getElementById('ramp-select');
+const volSlider   = document.getElementById('vol-slider');
+const volVal      = document.getElementById('vol-val');
+const progressBar = document.getElementById('progress-bar');
+const timeCurrent = document.getElementById('time-current');
+const timeTotal   = document.getElementById('time-total');
+const termTitle   = document.getElementById('term-title');
+const fileInfo    = document.getElementById('file-info');
+const fileInfoTxt = document.getElementById('file-info-text');
+const fileLabel   = document.getElementById('file-label');
+const footerTime  = document.getElementById('footer-time');
+const liveIndicator = document.getElementById('live-indicator');
+const dropOverlay = document.getElementById('drop-overlay');
 
-// canvas for pixel sampling
 const canvas = document.createElement('canvas');
 const ctx    = canvas.getContext('2d', { willReadFrequently: true });
 
+const fmt = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+
 // sliders
-colsSlider.addEventListener('input', () => { colsVal.textContent = colsSlider.value; });
-fpsSlider.addEventListener('input',  () => { fpsVal.textContent  = fpsSlider.value;  });
+colsSlider.addEventListener('input', () => { colsVal.textContent = colsSlider.value; updateTermTitle(); });
+fpsSlider.addEventListener('input',  () => { fpsVal.textContent  = fpsSlider.value; });
 volSlider.addEventListener('input',  () => {
   volVal.textContent = Math.round(volSlider.value * 100) + '%';
   if (videoEl) videoEl.volume = parseFloat(volSlider.value);
 });
 
 // drag and drop
-dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-dropZone.addEventListener('drop', e => {
+document.addEventListener('dragover', e => { e.preventDefault(); dropOverlay.classList.add('visible'); });
+document.addEventListener('dragleave', e => { if (!e.relatedTarget) dropOverlay.classList.remove('visible'); });
+document.addEventListener('drop', e => {
   e.preventDefault();
-  dropZone.classList.remove('drag-over');
+  dropOverlay.classList.remove('visible');
   const f = e.dataTransfer.files[0];
-  if (f) loadVideo(f);
+  if (f && f.type.startsWith('video/')) loadVideo(f);
 });
+
 fileInput.addEventListener('change', () => {
   if (fileInput.files[0]) loadVideo(fileInput.files[0]);
 });
@@ -349,32 +620,52 @@ function loadVideo(file) {
   videoEl.muted = false;
   videoEl.volume = parseFloat(volSlider.value);
   videoEl.preload = 'auto';
-  videoEl.crossOrigin = 'anonymous';
   videoEl.addEventListener('loadedmetadata', () => {
-    controls.style.display = 'flex';
-    dropZone.querySelector('.drop-title').textContent = '🎀 ' + file.name;
-    dropZone.querySelector('.drop-sub').textContent   = `${videoEl.duration.toFixed(1)}s — ready to play`;
+    const dur = videoEl.duration;
+    const res = `${videoEl.videoWidth}x${videoEl.videoHeight}`;
+    timeTotal.textContent = fmt(dur);
+    fileLabel.textContent = `${file.name} (H.264 / ${videoEl.videoHeight}p source)`;
+    fileInfoTxt.textContent = `${file.name} · ${videoEl.videoHeight}p · ${fpsSlider.value}fps`;
+    fileInfo.classList.add('visible');
+    updateTermTitle();
   });
+}
+
+function updateTermTitle() {
+  const fps = running ? fpsVal.textContent : '0';
+  termTitle.textContent = `tty1: ansimotion.py — ${colsSlider.value} cols — ${fps} fps`;
 }
 
 playBtn.addEventListener('click', startRender);
 stopBtn.addEventListener('click', stopRender);
+
+copyBtn.addEventListener('click', () => {
+  if (lastAscii) {
+    navigator.clipboard.writeText(lastAscii).then(() => {
+      copyBtn.textContent = '✓ copied!';
+      setTimeout(() => { copyBtn.innerHTML = '📋 copy buf'; }, 1500);
+    });
+  }
+});
+
+exportBtn.addEventListener('click', () => {
+  if (!lastAscii) return;
+  const blob = new Blob([lastAscii], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'ansimotion_frame.txt';
+  a.click();
+});
 
 function startRender() {
   if (!videoEl) return;
   running = true;
   playBtn.disabled = true;
   stopBtn.disabled = false;
-  terminal.classList.add('visible');
-  progressWrap.classList.add('visible');
-  playbackRow.classList.add('visible');
+  liveIndicator.style.display = 'flex';
   lastFrameT = 0; frameCount = 0; lastFpsT = performance.now();
   videoEl.currentTime = 0;
-  videoEl.play().catch(() => {
-    // fallback: mute and retry if browser blocks unmuted autoplay
-    videoEl.muted = true;
-    videoEl.play();
-  });
+  videoEl.play().catch(() => { videoEl.muted = true; videoEl.play(); });
   rafId = requestAnimationFrame(renderLoop);
 }
 
@@ -384,29 +675,22 @@ function stopRender() {
   if (videoEl) videoEl.pause();
   playBtn.disabled = false;
   stopBtn.disabled = true;
+  liveIndicator.style.display = 'none';
+  updateTermTitle();
 }
 
 function renderLoop(now) {
   if (!running) return;
 
-  const fpsCap    = parseInt(fpsSlider.value);
-  const frameBudget = 1000 / fpsCap;
+  const fpsCap = parseInt(fpsSlider.value);
+  const budget = 1000 / fpsCap;
 
-  if (now - lastFrameT < frameBudget - 2) {
-    rafId = requestAnimationFrame(renderLoop);
-    return;
-  }
-
+  if (now - lastFrameT < budget - 2) { rafId = requestAnimationFrame(renderLoop); return; }
   if (videoEl.ended) { stopRender(); return; }
-  if (videoEl.readyState < 2) {
-    rafId = requestAnimationFrame(renderLoop);
-    return;
-  }
+  if (videoEl.readyState < 2) { rafId = requestAnimationFrame(renderLoop); return; }
 
   const cols = parseInt(colsSlider.value);
   const ramp = RAMPS[rampSel.value];
-
-  // figure out rows preserving aspect ratio (char cells ~0.5 aspect)
   const CHAR_ASPECT = 0.5;
   const vidW = videoEl.videoWidth  || 640;
   const vidH = videoEl.videoHeight || 360;
@@ -416,46 +700,47 @@ function renderLoop(now) {
   canvas.height = rows;
   ctx.drawImage(videoEl, 0, 0, cols, rows);
 
-  const data = ctx.getImageData(0, 0, cols, rows).data; // RGBA flat array
+  const data = ctx.getImageData(0, 0, cols, rows).data;
 
-  // build colored html (spans) — same logic as Python renderer
   let html = '';
+  let plain = '';
   let prevR = -1, prevG = -1, prevB = -1;
 
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
       const base = (y * cols + x) * 4;
       let r = data[base], g = data[base+1], b = data[base+2];
-
-      // quantise
       const sh = COLOR_SHIFT;
       r = (r >> sh) << sh;
       g = (g >> sh) << sh;
       b = (b >> sh) << sh;
-
-      const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
-      const ci  = Math.floor(brightness / 255 * (ramp.length - 1));
-      const ch  = ramp[Math.min(ci, ramp.length - 1)];
-      const esc = (ch === '<') ? '&lt;' : (ch === '>') ? '&gt;' : (ch === '&') ? '&amp;' : ch;
-
+      const brightness = 0.299*r + 0.587*g + 0.114*b;
+      const ci = Math.floor(brightness / 255 * (ramp.length - 1));
+      const ch = ramp[Math.min(ci, ramp.length - 1)];
+      const esc = ch === '<' ? '&lt;' : ch === '>' ? '&gt;' : ch === '&' ? '&amp;' : ch;
       if (r !== prevR || g !== prevG || b !== prevB) {
         if (prevR !== -1) html += '</span>';
         html += `<span style="color:rgb(${r},${g},${b})">`;
         prevR = r; prevG = g; prevB = b;
       }
       html += esc;
+      plain += ch;
     }
-    html += '\n';
+    html  += '\n';
+    plain += '\n';
   }
   if (prevR !== -1) html += '</span>';
 
   asciiOut.innerHTML = html;
+  lastAscii = plain;
 
-  // FPS counter
+  // fps
   frameCount++;
   if (now - lastFpsT >= 500) {
-    fpsSmooth = Math.round(frameCount / ((now - lastFpsT) / 1000));
-    fpsDisplay.textContent = fpsSmooth + ' fps';
+    const fps = Math.round(frameCount / ((now - lastFpsT) / 1000));
+    fpsVal.textContent = fps;
+    fileInfoTxt.textContent = `${videoEl.src ? (fileLabel.textContent.split(' ')[0]) : '—'} · ${videoEl.videoHeight}p · ${fps}fps`;
+    termTitle.textContent = `tty1: ansimotion.py — ${cols} cols — ${fps} fps`;
     frameCount = 0;
     lastFpsT = now;
   }
@@ -463,10 +748,8 @@ function renderLoop(now) {
   // progress
   const pct = videoEl.duration ? (videoEl.currentTime / videoEl.duration * 100) : 0;
   progressBar.style.width = pct + '%';
-
-  // time display
-  const fmt = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
-  timeDisplay.textContent = `${fmt(videoEl.currentTime)} / ${fmt(videoEl.duration||0)}`;
+  timeCurrent.textContent = fmt(videoEl.currentTime);
+  footerTime.textContent  = `● LIVE RENDER · ${fmt(videoEl.currentTime)} / ${fmt(videoEl.duration||0)}`;
 
   lastFrameT = now;
   rafId = requestAnimationFrame(renderLoop);
