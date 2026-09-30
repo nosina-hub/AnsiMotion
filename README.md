@@ -1,4 +1,4 @@
-# vid2ascii ✨
+# AnsiMotion✨
 
 > turn any video into real-time colored ascii art — right in your browser.
 
@@ -31,7 +31,7 @@ vid2ascii takes a local video file and renders it frame-by-frame as **rgb colore
 
 ## live demo
 
-👉 [nosina-hub.github.io/vid2ascii](https://nosina-hub.github.io/vid2ascii)
+👉 [nosina-hub.github.io/AnsiMotion](https://nosina-hub.github.io/Ansimotion)
 
 ## how it works
 
@@ -46,6 +46,4 @@ each video frame is drawn onto a hidden `<canvas>` scaled to the column count. p
 | fps cap | limits render rate to save cpu |
 | vol | video audio volume |
 
----
 
-made with 🩷 — a single html file that does something kinda cool
