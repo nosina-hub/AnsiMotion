@@ -6,7 +6,7 @@ but then remember you don't want to touch a terminal
 $ python ascii_renderer.py myah.mp4
 > ugh
 
-just use the website instead → nosina-hub.github.io/ansimotion
+**just use the website instead →** [nosina-hub.github.io/ansimotion](https://nosina-hub.github.io/ansimotion)
 
 drag. drop. watch. ><
 full rgb · 24-bit ansi · runs in your browser · no install · no terminal
